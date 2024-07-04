@@ -32,5 +32,11 @@ namespace winctrl.Utils
             GetWindowText(hWnd, titleBuilder, length);
             return titleBuilder.ToString();
         }
+        
+        [DllImport("shell32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern uint ExtractIconEx(string lpszFile, int nIconIndex, [Out] IntPtr[] phiconLarge, [Out] IntPtr[] phiconSmall, [In] uint nIcons);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern int DestroyIcon(IntPtr hIcon);
     }
 }
