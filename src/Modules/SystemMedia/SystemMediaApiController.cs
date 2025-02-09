@@ -16,25 +16,39 @@ namespace winctrl.Modules.SystemMedia
         [HttpGet]
         public async Task<IHttpActionResult> GetStatus()
         {
-            var status = await _systemMediaService.GetStatusAsync();
-            return Ok(status);
+            try
+            {
+                var status = await _systemMediaService.GetStatusAsync();
+                return Ok(status);
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
 
         [Route("thumbnail")]
         [HttpGet]
         public async Task<IHttpActionResult> GetThumbnail()
         {
-            var thumbnail = await _systemMediaService.GetThumbnailAsync();
-            if (thumbnail == null)
+            try
+            {
+                var thumbnail = await _systemMediaService.GetThumbnailAsync();
+                if (thumbnail == null)
+                {
+                    return NotFound();
+                }
+
+                var response = new HttpResponseMessage(HttpStatusCode.OK);
+                response.Content = new ByteArrayContent(thumbnail.Bytes);
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue(thumbnail.ContentType);
+
+                return ResponseMessage(response);
+            }
+            catch
             {
                 return NotFound();
             }
-
-            var response = new HttpResponseMessage(HttpStatusCode.OK);
-            response.Content = new ByteArrayContent(thumbnail.Bytes);
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue(thumbnail.ContentType);
-
-            return ResponseMessage(response);
         }
 
         [Route("actions/skip-next")]

@@ -8,19 +8,24 @@ namespace winctrl.Modules.WebApiStartup
 {
     class WebApiStartup
     {
+        private static string _baseAddress = "http://localhost:8040/";
+        
         public static void Run()
         {
-            string baseAddress = "http://localhost:8040/";
-
             // Start OWIN host 
-            using (WebApp.Start<WebApiStartup>(url: baseAddress))
+            using (Start())
             {
-                Console.WriteLine("WebApi starting at {0}", baseAddress);
+                Console.WriteLine("WebApi starting at {0}", _baseAddress);
                 Console.WriteLine("Press Enter to quit.");
                 Console.ReadLine();
             }
         }
-
+        
+        public static IDisposable Start()
+        {
+            return WebApp.Start<WebApiStartup>(url: _baseAddress);
+        }
+        
         public void Configuration(IAppBuilder appBuilder)
         {
             // Configure Web API for self-host. 

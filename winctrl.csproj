@@ -3,9 +3,11 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net481</TargetFramework>
+	<StartupObject>winctrl.Program</StartupObject>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="GregsStack.InputSimulatorStandard" Version="1.3.5" />
         <PackageReference Include="Microsoft.AspNet.WebApi.OwinSelfHost" Version="5.3.0" />
         <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.26100.1" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />

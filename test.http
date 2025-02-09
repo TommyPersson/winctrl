@@ -51,3 +51,14 @@ GET {{host}}/api/executables/icon-image?filePath=C:\Users\Tommy\AppData\Local\Pr
 ### executables icons
 
 GET {{host}}/api/executables/icons?filePath=C:\Users\Tommy\AppData\Local\Programs\Rider\bin\rider64.exe
+
+
+#####
+
+
+### keyboard send-keys
+
+POST {{host}}/api/keyboard/actions/send-keys
+Content-Type: text/plain
+
+Ctrl+L
