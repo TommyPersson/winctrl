@@ -25,5 +25,19 @@ namespace winctrl.Modules.Processes
                 ProcessId = process.Id,
             });
         }
+
+        public async Task StartProcess(string executable)
+        {
+            Process.Start(executable);
+        }
+
+        public async Task OpenUrl(string url)
+        {
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = url,
+                UseShellExecute = true
+            });
+        }
     }
 }

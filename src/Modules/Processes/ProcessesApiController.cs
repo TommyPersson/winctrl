@@ -15,5 +15,23 @@ namespace winctrl.Modules.Processes
             var info = await _processesService.GetActiveWindowInfoAsync();
             return Ok(info);
         }
+        
+        [Route("actions/start-process")]
+        [HttpPost]
+        public async Task<IHttpActionResult> StartProcess()
+        {
+            var executable = await Request.Content.ReadAsStringAsync();
+            await _processesService.StartProcess(executable);
+            return Ok();
+        }
+        
+        [Route("actions/open-url")]
+        [HttpPost]
+        public async Task<IHttpActionResult> OpenUrl()
+        {
+            var url = await Request.Content.ReadAsStringAsync();
+            await _processesService.OpenUrl(url);
+            return Ok();
+        }
     }
 }

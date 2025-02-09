@@ -38,6 +38,21 @@ POST {{host}}/api/system-media/actions/pause-or-resume
 
 GET {{host}}/api/processes/active-window-info
 
+### processes start-process
+
+POST {{host}}/api/processes/actions/start-process
+Content-Type: text/plain
+
+D:\SquareEnix\FINAL FANTASY XIV - A Realm Reborn\boot\ffxivboot64.exe
+
+
+### processes open-url
+
+POST {{host}}/api/processes/actions/open-url
+Content-Type: text/plain
+
+https://www.google.com
+
 ##################
 
 ### executables icon-data
