@@ -1,6 +1,7 @@
 using System;
 using System.Web.Http;
 using Microsoft.Owin.Hosting;
+using Newtonsoft.Json.Converters;
 using Owin;
 
 namespace winctrl.Modules.WebApiStartup
@@ -25,7 +26,8 @@ namespace winctrl.Modules.WebApiStartup
             // Configure Web API for self-host. 
             HttpConfiguration config = new HttpConfiguration();
             config.MapHttpAttributeRoutes();
-
+            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new StringEnumConverter());
+            
             appBuilder.UseWebApi(config);
         }
     }
