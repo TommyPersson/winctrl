@@ -1,0 +1,53 @@
+@host = localhost:8040
+
+### system media status
+
+GET {{host}}/api/system-media/status
+
+### system media thumbnail
+
+GET {{host}}/api/system-media/thumbnail
+
+### system-media skip-next
+
+POST {{host}}/api/system-media/actions/skip-next
+
+### system-media skip-previous
+
+POST {{host}}/api/system-media/actions/skip-previous
+
+### system-media pause
+
+POST {{host}}/api/system-media/actions/pause
+
+### system-media play
+
+POST {{host}}/api/system-media/actions/play
+
+### system-media resume
+
+POST {{host}}/api/system-media/actions/resume
+
+### system-media pause-or-resume
+
+POST {{host}}/api/system-media/actions/pause-or-resume
+
+##################
+
+### processes active-window-info
+
+GET {{host}}/api/processes/active-window-info
+
+##################
+
+### executables icon-data
+
+GET {{host}}/api/executables/icon-data?filePath=C:\Users\Tommy\AppData\Local\Programs\Rider\bin\rider64.exe
+
+### executables icon-image
+
+GET {{host}}/api/executables/icon-image?filePath=C:\Users\Tommy\AppData\Local\Programs\Rider\bin\rider64.exe
+
+### executables icons
+
+GET {{host}}/api/executables/icons?filePath=C:\Users\Tommy\AppData\Local\Programs\Rider\bin\rider64.exe

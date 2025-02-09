@@ -67,8 +67,9 @@ namespace winctrl.Modules.SystemMedia
             var properties = await session.TryGetMediaPropertiesAsync();
             var thumbnailStream = await properties.Thumbnail.OpenReadAsync();
             var bytesStream = new MemoryStream();
-            thumbnailStream.AsStreamForRead().CopyTo(bytesStream);
+            await thumbnailStream.AsStreamForRead().CopyToAsync(bytesStream);
             var bytes = bytesStream.ToArray();
+            bytesStream.Dispose();
 
             return new ThumbnailDTO()
             {
