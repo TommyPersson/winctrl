@@ -8,7 +8,7 @@ namespace winctrl.Modules.WebApiStartup
 {
     class WebApiStartup
     {
-        private static string _baseAddress = "http://localhost:8040/";
+        private static string _baseAddress = "http://+:8030/";
         
         public static void Run()
         {

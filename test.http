@@ -1,4 +1,4 @@
-@host = localhost:8040
+@host = localhost:8030
 
 ### system media status
 
@@ -77,3 +77,11 @@ POST {{host}}/api/keyboard/actions/send-keys
 Content-Type: text/plain
 
 Ctrl+L
+
+
+
+####
+
+### dns
+
+GET http://192.168.1.221:8030/api/system-media/status

@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using winctrl.Modules.Executables.Contracts;
 
@@ -16,36 +14,41 @@ namespace winctrl.Modules.Executables
 
         public Task<ExecutableIconsDTO> GetIconsForFile(string filePath)
         {
-            var icon = Icon.ExtractAssociatedIcon(filePath);
-            return Task.FromResult(new ExecutableIconsDTO
+            // Icon and Bitmap wrap GDI handles; they must be disposed or the process runs out of GDI objects.
+            using (var icon = Icon.ExtractAssociatedIcon(filePath))
             {
-                ExecutableFilePath = filePath,
-                Icons = new List<ExecutableIconsDTO.IconInfo>
+                return Task.FromResult(new ExecutableIconsDTO
                 {
-                    new ExecutableIconsDTO.IconInfo()
+                    ExecutableFilePath = filePath,
+                    Icons = new List<ExecutableIconsDTO.IconInfo>
                     {
-                        Index = 0,
-                        Sizes = new List<string> { $"{icon.Width}x{icon.Height}" }
-                    },
-                }
-            });
+                        new ExecutableIconsDTO.IconInfo()
+                        {
+                            Index = 0,
+                            Sizes = new List<string> { $"{icon.Width}x{icon.Height}" }
+                        },
+                    }
+                });
+            }
         }
 
         public Task<ExecutableIconDTO> GetIconData(string filePath, int index, string size)
         {
-            var  icon = Icon.ExtractAssociatedIcon(filePath);
-            var stream = new MemoryStream();
-            icon.ToBitmap().Save(stream, ImageFormat.Png);
-            var bytes = stream.ToArray();
-            return Task.FromResult(new ExecutableIconDTO()
+            using (var icon = Icon.ExtractAssociatedIcon(filePath))
+            using (var bitmap = icon.ToBitmap())
+            using (var stream = new MemoryStream())
             {
-                ExecutableFilePath = filePath,
-                Index = 0,
-                Height = icon.Height,
-                Width = icon.Width,
-                ContentType = "image/png",
-                Bytes = bytes,
-            });
+                bitmap.Save(stream, ImageFormat.Png);
+                return Task.FromResult(new ExecutableIconDTO()
+                {
+                    ExecutableFilePath = filePath,
+                    Index = 0,
+                    Height = icon.Height,
+                    Width = icon.Width,
+                    ContentType = "image/png",
+                    Bytes = stream.ToArray(),
+                });
+            }
         }
     }
 }

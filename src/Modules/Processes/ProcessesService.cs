@@ -14,21 +14,24 @@ namespace winctrl.Modules.Processes
             var windowTitle = Win32.GetWindowTitle(activeWindowHandle);
             var processId = Win32.GetWindowThreadProcessId(activeWindowHandle);
             
-            var process = Process.GetProcessById(Convert.ToInt32(processId));
-                
-            return Task.FromResult(new ActiveWindowInfoDTO
+            using (var process = Process.GetProcessById(Convert.ToInt32(processId)))
             {
-                WindowTitle = windowTitle,
-                ExecutableName = process.MainModule?.ModuleName,
-                ExecutableFileName = process.MainModule?.FileName,
-                ProcessName = process.ProcessName,
-                ProcessId = process.Id,
-            });
+                // MainModule enumerates the target's modules on each access; read it once.
+                var mainModule = process.MainModule;
+                return Task.FromResult(new ActiveWindowInfoDTO
+                {
+                    WindowTitle = windowTitle,
+                    ExecutableName = mainModule?.ModuleName,
+                    ExecutableFileName = mainModule?.FileName,
+                    ProcessName = process.ProcessName,
+                    ProcessId = process.Id,
+                });
+            }
         }
 
         public async Task StartProcess(string executable)
         {
-            Process.Start(executable);
+            Process.Start(executable)?.Dispose();
         }
 
         public async Task OpenUrl(string url)
@@ -37,7 +40,7 @@ namespace winctrl.Modules.Processes
             {
                 FileName = url,
                 UseShellExecute = true
-            });
+            })?.Dispose();
         }
     }
 }
