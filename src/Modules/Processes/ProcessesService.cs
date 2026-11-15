@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using winctrl.Modules.Processes.Contracts;
 using winctrl.Utils;
@@ -41,6 +42,42 @@ namespace winctrl.Modules.Processes
                 FileName = url,
                 UseShellExecute = true
             })?.Dispose();
+        }
+
+        /// <summary>
+        /// Brings the main window of a process to the front, e.g. after opening a link handled by an app that is
+        /// already running, which Windows otherwise only flashes in the taskbar.
+        /// </summary>
+        /// <returns><c>null</c> if no such process has a window, otherwise whether it was brought to the front.</returns>
+        public Task<bool?> FocusWindow(string processName)
+        {
+            var name = processName.Trim();
+            if (name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            {
+                name = name.Substring(0, name.Length - 4);
+            }
+
+            var processes = Process.GetProcessesByName(name);
+            try
+            {
+                var window = processes
+                    .Select(it => it.MainWindowHandle)
+                    .FirstOrDefault(it => it != IntPtr.Zero);
+
+                if (window == IntPtr.Zero)
+                {
+                    return Task.FromResult<bool?>(null);
+                }
+
+                return Task.FromResult<bool?>(Win32.ForceForegroundWindow(window));
+            }
+            finally
+            {
+                foreach (var process in processes)
+                {
+                    process.Dispose();
+                }
+            }
         }
     }
 }

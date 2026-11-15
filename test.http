@@ -53,6 +53,13 @@ Content-Type: text/plain
 
 https://www.google.com
 
+### processes focus-window
+
+POST {{host}}/api/processes/actions/focus-window
+Content-Type: text/plain
+
+claude
+
 ##################
 
 ### executables icon-data
