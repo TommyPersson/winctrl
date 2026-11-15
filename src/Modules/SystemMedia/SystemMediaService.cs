@@ -67,10 +67,16 @@ namespace winctrl.Modules.SystemMedia
                     using (var bytesStream = new MemoryStream())
                     {
                         await readStream.CopyToAsync(bytesStream);
+                        var bytes = bytesStream.ToArray();
+                        if (bytes.Length == 0)
+                        {
+                            return null;
+                        }
+
                         return new ThumbnailDTO
                         {
-                            ContentType = thumbnailStream.ContentType,
-                            Bytes = bytesStream.ToArray(),
+                            ContentType = NormalizeContentType(thumbnailStream.ContentType, bytes),
+                            Bytes = bytes,
                         };
                     }
                 }
@@ -84,6 +90,26 @@ namespace winctrl.Modules.SystemMedia
                 Release(properties);
                 Release(session);
             }
+        }
+
+        // The media broker reports content types such as "image/jpeg,image/jpe,image/jpg", which is not a valid
+        // single MIME type and makes HTTP clients reject or misrender the image. Use the first entry, and fall back
+        // to sniffing the image signature when it is missing or not an image type.
+        private static string NormalizeContentType(string reported, byte[] bytes)
+        {
+            var first = reported?.Split(',', ';')[0].Trim().ToLowerInvariant();
+            if (!string.IsNullOrEmpty(first) && first.StartsWith("image/") && first.IndexOf('/') == first.LastIndexOf('/'))
+            {
+                return first == "image/jpg" ? "image/jpeg" : first;
+            }
+
+            if (bytes.Length >= 3 && bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF) return "image/jpeg";
+            if (bytes.Length >= 8 && bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47) return "image/png";
+            if (bytes.Length >= 6 && bytes[0] == 0x47 && bytes[1] == 0x49 && bytes[2] == 0x46) return "image/gif";
+            if (bytes.Length >= 2 && bytes[0] == 0x42 && bytes[1] == 0x4D) return "image/bmp";
+            if (bytes.Length >= 12 && bytes[0] == 0x52 && bytes[1] == 0x49 && bytes[2] == 0x46 && bytes[3] == 0x46
+                && bytes[8] == 0x57 && bytes[9] == 0x45 && bytes[10] == 0x42 && bytes[11] == 0x50) return "image/webp";
+            return "application/octet-stream";
         }
 
         private async Task<object> WithSessionAsync(Func<GlobalSystemMediaTransportControlsSession, Task<bool>> action)

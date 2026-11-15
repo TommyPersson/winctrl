@@ -42,12 +42,19 @@ namespace winctrl.Modules.SystemMedia
                 var response = new HttpResponseMessage(HttpStatusCode.OK);
                 response.Content = new ByteArrayContent(thumbnail.Bytes);
                 response.Content.Headers.ContentType = new MediaTypeHeaderValue(thumbnail.ContentType);
+                // Same URL, different image per track: keep clients from showing a cached one.
+                response.Headers.CacheControl = new CacheControlHeaderValue { NoStore = true, NoCache = true };
 
                 return ResponseMessage(response);
             }
-            catch
+            catch (NoMediaSessionAvailableException)
             {
                 return NotFound();
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Failed to get thumbnail: {e}");
+                return InternalServerError(e);
             }
         }
 
